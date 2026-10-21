@@ -21,7 +21,7 @@ import { mountBase, packItem } from "../packs.ts";
 import { pushOutdoor } from "./outdoor.ts";
 import { pushModules } from "./roof.ts";
 import type { RoofFace } from "../solar.ts";
-import { cutAbove, cutLinesAbove, FURN_OFFSET, ALWAYS, CAP_OFFSET, CUT_OFFSET, EDGE_BASE, EDGE_CUT, EDGE_SOFT, EDGE_TOP, GeoBuffer, LineBuffer, LOWER_OFFSET, pushPrism, triangulate } from "./geo.ts";
+import { cutAbove, cutLinesAbove, FURN_BUCKET, FURN_OFFSET, ALWAYS, CAP_OFFSET, CUT_OFFSET, EDGE_BASE, EDGE_CUT, EDGE_SOFT, EDGE_TOP, GeoBuffer, LineBuffer, LOWER_OFFSET, pushPrism, triangulate } from "./geo.ts";
 
 export { ALWAYS, CUT_OFFSET, GeoBuffer, LineBuffer, pushPrism, shade } from "./geo.ts";
 
@@ -385,8 +385,8 @@ export function buildFloorGeometry(
     pushFurniture(wallBuf, lines, shadow, f, base);
     // a wardrobe or a stair reaching above the cut height is cut with the walls, so it hides nothing behind it
     if (base + f.h > cut + 0.05) {
-      cutAbove(wallBuf, start, cut, FURN_OFFSET);
-      cutLinesAbove(lines, l0, cut, FURN_OFFSET);
+      cutAbove(wallBuf, start, cut, FURN_OFFSET + FURN_BUCKET);
+      cutLinesAbove(lines, l0, cut, FURN_OFFSET + FURN_BUCKET);
     }
     furnitureTris.push({ id: f.id, start, end: wallBuf.count });
   }

@@ -21,6 +21,7 @@
  "draft_discard": "Zahodit",
  "walls_auto": "Vysoké stěny",
  "walls_cut": "Řez",
+ "walls_cut_objects": "Řez (s objekty)",
  "reset_view": "Přehled",
  "back": "Zpět",
  "floor": "Podlaží",

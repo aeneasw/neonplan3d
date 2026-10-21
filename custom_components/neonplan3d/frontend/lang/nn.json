@@ -21,6 +21,7 @@
  "draft_discard": "Forkast",
  "walls_auto": "Høge veggar",
  "walls_cut": "Snitt",
+ "walls_cut_objects": "Snitt (med objekt)",
  "reset_view": "Oversikt",
  "back": "Tilbake",
  "floor": "Etasje",

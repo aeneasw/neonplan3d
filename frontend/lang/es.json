@@ -21,6 +21,7 @@
  "draft_discard": "Descartar",
  "walls_auto": "Paredes altas",
  "walls_cut": "Corte",
+ "walls_cut_objects": "Corte (con objetos)",
  "reset_view": "Vista general",
  "back": "Atrás",
  "floor": "Planta",

@@ -21,6 +21,7 @@
  "draft_discard": "Hylkää",
  "walls_auto": "Korkeat seinät",
  "walls_cut": "Leikkaus",
+ "walls_cut_objects": "Leikkaus (objektit kokonaan)",
  "reset_view": "Yleiskuva",
  "back": "Takaisin",
  "floor": "Kerros",

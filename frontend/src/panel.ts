@@ -175,7 +175,8 @@ export class Floorplan3dPanel extends LitElement {
     this._floorId = null;
     this._roomId = null;
     // the wall view stays as it was last set on this device (#309)
-    this._wallMode = prefs.get("walls") === "cut" ? "cut" : "auto";
+    const walls = prefs.get("walls");
+    this._wallMode = walls === "cut" || walls === "cut_objects" ? walls : "auto";
     this._explode = prefs.get("explode") !== "0";
     this._keepRoof = prefs.get("roof") === "1";
     const quality = prefs.get("quality");
@@ -1014,6 +1015,7 @@ export class Floorplan3dPanel extends LitElement {
           <div class="fp3d-seg">
             <button aria-pressed=${this._wallMode === "auto"} @click=${() => this.setWallMode("auto")}>${this.t("walls_auto")}</button>
             <button aria-pressed=${this._wallMode === "cut"} @click=${() => this.setWallMode("cut")}>${this.t("walls_cut")}</button>
+            <button aria-pressed=${this._wallMode === "cut_objects"} title=${this.t("walls_cut_objects_hint")} @click=${() => this.setWallMode("cut_objects")}>${this.t("walls_cut_objects")}</button>
           </div>
           ${b.floors.length > 1 && !this._floorId
             ? html`<div class="fp3d-seg">

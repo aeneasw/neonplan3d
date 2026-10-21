@@ -21,6 +21,7 @@
  "draft_discard": "丢弃",
  "walls_auto": "高墙",
  "walls_cut": "剖切",
+ "walls_cut_objects": "剖切（保留物体）",
  "reset_view": "总览",
  "back": "返回",
  "floor": "楼层",

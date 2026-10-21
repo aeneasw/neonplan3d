@@ -118,7 +118,7 @@ floor: floor_ab12cd34   # show a single floor (id from the editor); room: opens 
 height: 420             # height in pixels, or fill: true for the whole screen
 quality: auto           # auto | low | high – "auto" picks the tablet level on weak devices
 theme: neon             # neon | blueprint | day, with accent: "#00e5ff"
-walls: auto             # auto | cut
+walls: auto             # auto | cut | cut_objects (walls cut, furniture whole)
 markers: important      # device symbols: none | important | all
 heatmap: none           # none | temperature | humidity | co2
 room_panel: true        # a tap on a room opens its panel

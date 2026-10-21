@@ -21,6 +21,7 @@
  "draft_discard": "Kassér",
  "walls_auto": "Høje vægge",
  "walls_cut": "Snit",
+ "walls_cut_objects": "Snit (med objekter)",
  "reset_view": "Oversigt",
  "back": "Tilbage",
  "floor": "Etage",

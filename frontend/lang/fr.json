@@ -21,6 +21,7 @@
  "draft_discard": "Abandonner",
  "walls_auto": "Murs hauts",
  "walls_cut": "Coupe",
+ "walls_cut_objects": "Coupe (avec objets)",
  "reset_view": "Vue d'ensemble",
  "back": "Retour",
  "floor": "Étage",

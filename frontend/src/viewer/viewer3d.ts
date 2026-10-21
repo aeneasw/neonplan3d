@@ -73,7 +73,7 @@ import { buildPools, disposePools, type PoolPiece } from "./pool-water.ts";
 import { accentOnUniform, accentUniform, parseAccent, lineBlending, themed, themeIndex, type Theme, type ThemeUniform } from "./theme.ts";
 
 export type { Theme } from "./theme.ts";
-import { ALWAYS, DEG, GeoBuffer, LineBuffer, pushPrism } from "./geo.ts";
+import { ALWAYS, DEG, FURN_BUCKET, GeoBuffer, LineBuffer, pushPrism } from "./geo.ts";
 import { buildLightSurface, lightColors, roomIndexAt, type LightKind, type LightSource, type LightSurface, zoneOf } from "./lighting.ts";
 import { buildOpeningParts, CLOSED, type OpeningState } from "./openings.ts";
 import { circlePath, cleaningPath, stepRobot, type RobotInfo, type RobotMotion } from "./robot.ts";
@@ -86,7 +86,8 @@ const ROBOT_LED: Record<RobotInfo["mode"], number> = { cleaning: 0x37e0ff, retur
 export type { OpeningState } from "./openings.ts";
 
 export type Quality = "auto" | "low" | "high";
-export type WallMode = "auto" | "cut";
+/** Tall walls; walls and tall furniture cut at the cut height; or the walls cut and the furniture kept whole. */
+export type WallMode = "auto" | "cut" | "cut_objects";
 
 export interface ViewerOptions {
   quality?: Quality;
@@ -863,6 +864,16 @@ export class FloorplanViewer {
     const zs = room.points.map((p) => p[1]);
     const size = new Vector3(Math.max(...xs) - Math.min(...xs), fv.floor.cut_height, Math.max(...zs) - Math.min(...zs));
     this.controls.flyTo({ target: new Vector3(cx, fv.floor.elevation + fv.ty + 0.3, cz), radius: Math.max(4, this.distanceFor(size) * 1.05), phi: 0.72 });
+  }
+
+  /** Whether the walls are cut at the cut height (both cut views). */
+  private get wallsCut(): boolean {
+    return this.wallMode !== "auto";
+  }
+
+  /** Whether furniture, hanging lamps, fans and ceiling cameras are cut with the walls. */
+  private get objectsCut(): boolean {
+    return this.wallMode === "cut";
   }
 
   setWallMode(mode: WallMode): void {
@@ -2354,7 +2365,7 @@ export class FloorplanViewer {
     const zoom = this.keepRoof ? 1 : Math.min(1, Math.max(0, (this.controls.view.radius / this.houseRadius - 0.62) / 0.3));
     // a house with a single floor shows that floor as its house view, roof included (D208)
     const house = this.floorId === null || this.floors.length === 1;
-    const target = house && this.wallMode !== "cut" && !this.hideRoof ? ROOF_OPACITY * zoom : 0;
+    const target = house && !this.wallsCut && !this.hideRoof ? ROOF_OPACITY * zoom : 0;
     const k = 1 - Math.exp(-dt / FLOOR_TAU);
     const before = this.roofO;
     this.roofO += (target - this.roofO) * k;
@@ -2372,7 +2383,7 @@ export class FloorplanViewer {
       // the windows stay in the slope over their floor's rooms while the roof lifts away (not in the cut view)
       if (part.win) {
         part.win.position.y = fv.floor.elevation + ride.y + part.base + (part.lift ? apart * ROOF_GAP : 0);
-        part.win.visible = fv.group.visible && fv.o > 0.5 && this.wallMode !== "cut";
+        part.win.visible = fv.group.visible && fv.o > 0.5 && !this.wallsCut;
       }
     }
     // windows in a slope over a lower floor: with that floor, wherever it glides
@@ -2380,7 +2391,7 @@ export class FloorplanViewer {
       const fv = this.floorMap.get(w.floorId);
       if (!fv) continue;
       w.win.position.y = fv.floor.elevation + fv.y;
-      w.win.visible = fv.group.visible && fv.o > 0.5 && this.wallMode !== "cut";
+      w.win.visible = fv.group.visible && fv.o > 0.5 && !this.wallsCut;
     }
     roof.solid.opacity = this.roofO;
     roof.solid.depthWrite = this.roofO > 0.9;
@@ -2620,7 +2631,7 @@ export class FloorplanViewer {
       for (const d of lamps) {
         // hanging lamps (and ceiling cameras) would float above cut walls
         const hanging = d.lamp === "strip" ? (d.base ?? H) > Math.min(fv.floor.cut_height, H) : d.lamp ? HANGING.has(d.lamp) && (d.top ?? H) > Math.min(fv.floor.cut_height, H) : d.model === "camera_ceiling";
-        if ((!d.lamp && !d.model) || (hanging && this.wallMode === "cut")) continue;
+        if ((!d.lamp && !d.model) || (hanging && this.objectsCut)) continue;
         const start = buf.count;
         const packed = d.pack ? packItem(d.pack) : undefined;
         const [pw, pd, ph] = d.size ?? [0.3, 0.3, 0.3];
@@ -2815,7 +2826,7 @@ export class FloorplanViewer {
     const coneTris: FloorView["coneTris"] = [];
     for (const d of this.devices) {
       if (d.model && d.floorId === fv.floor.id) {
-        if (d.model === "camera_ceiling" && this.wallMode === "cut") continue;
+        if (d.model === "camera_ceiling" && this.objectsCut) continue;
         if (d.cone === false) continue;
         // the camera's field of view on the floor: a faint wedge, red while it sees motion
         const a = (d.rotation ?? 0) * DEG;
@@ -2867,7 +2878,7 @@ export class FloorplanViewer {
       }
       const glow = this.glowOf(d);
       if (d.floorId !== fv.floor.id || !d.lamp || !glow) continue;
-      if (HANGING.has(d.lamp) && this.wallMode === "cut" && (d.top ?? H) > Math.min(fv.floor.cut_height, H)) continue;
+      if (HANGING.has(d.lamp) && this.objectsCut && (d.top ?? H) > Math.min(fv.floor.cut_height, H)) continue;
       const Ht = d.top ?? H;
       const [w, dd, h] = d.size ?? LAMP_SIZE[d.lamp];
       const base = d.base ?? 0;
@@ -3473,7 +3484,7 @@ export class FloorplanViewer {
         if (id) return { entity: id };
       } else if (hit.object === fv.framesMesh || hit.object === fv.blindsMesh || hit.object === fv.glassMesh) {
         // the part above the cut is folded away with its wall: a tap there is meant for what lies behind
-        if (this.wallMode === "cut" && hit.face) {
+        if (this.wallsCut && hit.face) {
           const fold = ((hit.object as Mesh).geometry.getAttribute("fold") as Float32BufferAttribute | undefined)?.getX(hit.face.a) ?? ALWAYS;
           if (fold !== ALWAYS && Math.floor(fold / 16) === 0) continue;
         }
@@ -3495,7 +3506,7 @@ export class FloorplanViewer {
           const fold = (fv.wallMesh.geometry.getAttribute("fold") as Float32BufferAttribute | undefined)?.getX(hit.face.a) ?? 32;
           const part = Math.floor(fold / 16);
           const bucket = fold % 16;
-          const cutAway = this.wallMode === "cut" && part === 0;
+          const cutAway = this.wallsCut && part === 0;
           const glass = (fv.mask.glass.value & (1 << bucket)) !== 0;
           if (!cutAway) {
             // the room on the camera's side of the wall is what the tap means
@@ -4071,7 +4082,7 @@ export class FloorplanViewer {
       if (!fv) continue;
       if (f.group.parent !== fv.group) fv.group.add(f.group);
       // hanging above cut walls they are left out like the lamps
-      f.group.visible = !(this.wallMode === "cut" && f.y > Math.min(fv.floor.cut_height, fv.floor.height));
+      f.group.visible = !(this.objectsCut && f.y > Math.min(fv.floor.cut_height, fv.floor.height));
       if (f.speed <= 0) continue;
       turning = true;
       // up to about one turn a second at full speed
@@ -4331,13 +4342,14 @@ export class FloorplanViewer {
     for (const fv of this.floors) {
       // in a room, its floor's interior walls turn into glass as well
       const inRoom = this.roomId !== null && fv.floor.rooms.some((r) => r.id === this.roomId);
-      const cut = this.wallMode === "cut";
+      const cut = this.wallsCut;
       let glass = 0;
       fv.geo.buckets.forEach((normal, b) => {
         const facing = normal ? (normal[0] * dx) / l + (normal[1] * dz) / l >= 0.25 : inRoom;
         if (!cut && facing) glass |= 1 << b;
       });
-      fv.mask.standing.value = cut ? 0 : 0xffff;
+      // furniture above the cut has a bucket of its own: kept standing when only the walls are cut
+      fv.mask.standing.value = cut ? (this.objectsCut ? 0 : 1 << FURN_BUCKET) : 0xffff;
       fv.mask.glass.value = glass;
     }
   }

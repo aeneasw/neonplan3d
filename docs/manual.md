@@ -1131,7 +1131,7 @@ floor: floor_ab12cd34   # show one floor (id from the editor)
 room: room_ab12cd34     # start in this room (the id is in the editor's room form), e.g. a display for the kids' room
 height: 420             # height in pixels
 fill: false             # fill the screen below the header
-walls: auto             # auto | cut
+walls: auto             # auto | cut | cut_objects (walls cut, furniture whole)
 controls_side: left     # left | right: floor pictures, star, search and eye on the right
 keep_view: false        # true: floor switches keep the camera
 angle_lock: false       # true: 3D lock – the angle stays fixed, a drag moves the view

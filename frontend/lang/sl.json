@@ -21,6 +21,7 @@
  "draft_discard": "Zavrzi",
  "walls_auto": "Visoke stene",
  "walls_cut": "Prerez",
+ "walls_cut_objects": "Prerez (s predmeti)",
  "reset_view": "Pregled",
  "back": "Nazaj",
  "floor": "Nadstropje",

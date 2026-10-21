@@ -210,3 +210,18 @@ test("a sloping wall: its top runs from the height at its start to the one at it
   const info = geo.openings.find((o) => o.opening.id === win.id);
   assert.ok(info && info.top < 1.19 && info.top > 1.1, `window top ${info?.top}`);
 });
+
+test("tall furniture folds above the cut height in a bucket of its own (cut with objects keeps it)", () => {
+  const wardrobe: Furniture = { id: "w", type: "wardrobe", x: 2, z: 1.5, rotation: 0, w: 1.2, d: 0.6, h: 2.2, variant: null };
+  const floor = floorWith([rect("a", 0, 0, 4, 3)], [], [wardrobe]);
+  const geo = buildFloorGeometry(floor, EXT, INT);
+  const { start, end } = geo.furnitureTris.find((t) => t.id === "w")!;
+  const p = geo.walls.getAttribute("position");
+  const f = geo.walls.getAttribute("fold");
+  const cut = Math.min(floor.cut_height, floor.height);
+  const above = new Set<number>();
+  for (let v = start * 3; v < end * 3; v++) if (p.getY(v) > cut + 1e-6) above.add(f.getX(v));
+  // the part above the cut: kind 4 in bucket 15, a bit no wall uses
+  assert.deepEqual([...above], [64 + 15]);
+  assert.ok(geo.buckets.length < 15);
+});

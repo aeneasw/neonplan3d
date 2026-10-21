@@ -21,6 +21,7 @@
  "draft_discard": "Weggooien",
  "walls_auto": "Hoge muren",
  "walls_cut": "Doorsnede",
+ "walls_cut_objects": "Doorsnede (met objecten)",
  "reset_view": "Overzicht",
  "back": "Terug",
  "floor": "Verdieping",

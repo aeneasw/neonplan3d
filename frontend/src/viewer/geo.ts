@@ -20,6 +20,9 @@ export const LOWER_OFFSET = 32;
 export const CAP_OFFSET = 48;
 /** Fold kind 4: the part of a tall piece of furniture above the cut height – folds away with the walls. */
 export const FURN_OFFSET = 64;
+/** The fold bucket of furniture above the cut: a bit of its own (walls use at most 9), so the view "cut with
+ * objects" can cut the walls and keep the furniture whole. */
+export const FURN_BUCKET = 15;
 
 export class GeoBuffer {
   p: number[] = [];

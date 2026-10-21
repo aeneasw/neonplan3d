@@ -746,7 +746,8 @@ export class Fp3dEditor extends LitElement {
     // the 3D pane's wall view stays as it was last set on this device (#309)
     this._wall3d = "cut";
     try {
-      if (localStorage.getItem("neonplan3d.walls3d") === "auto") this._wall3d = "auto";
+      const walls = localStorage.getItem("neonplan3d.walls3d");
+      if (walls === "auto" || walls === "cut_objects") this._wall3d = walls;
     } catch {
       // no storage: the default
     }
@@ -1107,6 +1108,7 @@ export class Fp3dEditor extends LitElement {
         : html`<div class="fp3d-seg fp3d-3d-walls">
             <button aria-pressed=${this._wall3d === "auto"} @click=${() => this.setWall3d("auto")}>${this.t("walls_auto")}</button>
             <button aria-pressed=${this._wall3d === "cut"} @click=${() => this.setWall3d("cut")}>${this.t("walls_cut")}</button>
+            <button aria-pressed=${this._wall3d === "cut_objects"} title=${this.t("walls_cut_objects_hint")} @click=${() => this.setWall3d("cut_objects")}>${this.t("walls_cut_objects")}</button>
           </div>`}
       ${this.render3dBar()}
       <fp3d-view3d

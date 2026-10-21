@@ -23,7 +23,7 @@ type HeatMode = NonNullable<CardConfig["heatmap"]>;
 function savedWalls(): WallMode | null {
   try {
     const v = localStorage.getItem("neonplan3d.card_walls");
-    return v === "auto" || v === "cut" ? v : null;
+    return v === "auto" || v === "cut" || v === "cut_objects" ? v : null;
   } catch {
     return null;
   }
@@ -445,6 +445,7 @@ clearTimeout(this.cleanTimer);
                 ? html`<div class="fp3d-seg">
                     <button aria-pressed=${walls === "auto"} @click=${() => this.setWalls("auto")}>${t("walls_auto")}</button>
                     <button aria-pressed=${walls === "cut"} @click=${() => this.setWalls("cut")}>${t("walls_cut")}</button>
+                    <button aria-pressed=${walls === "cut_objects"} title=${t("walls_cut_objects_hint")} @click=${() => this.setWalls("cut_objects")}>${t("walls_cut_objects")}</button>
                   </div>`
                 : nothing}
               ${shows("floors") && b.floors.length > 1 && !floorId

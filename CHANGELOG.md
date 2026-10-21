@@ -4,6 +4,16 @@ All notable changes to NeonPlan 3D. The full notes in German and English are on 
 [releases page](https://github.com/Mastershort/neonplan3d/releases). Ideas and votes:
 [Discussions → Ideas](https://github.com/Mastershort/neonplan3d/discussions/categories/ideas).
 
+## 1.26.0
+
+### New
+
+- **Cut (with objects):** a third wall view beside *Tall walls* and *Cut* – the walls are cut at the cut height as in *Cut*, but wardrobes, stairs, hanging lamps, ceiling fans and ceiling cameras stay whole. In the panel's 3D view, the editor's 3D view and the card (`walls: cut_objects`).
+
+### Changed
+
+- The fork no longer publishes an online demo on GitHub Pages (the workflow is removed).
+
 ## 1.25.2
 
 ### Changed
