@@ -4,6 +4,12 @@ All notable changes to NeonPlan 3D. The full notes in German and English are on 
 [releases page](https://github.com/Mastershort/neonplan3d/releases). Ideas and votes:
 [Discussions → Ideas](https://github.com/Mastershort/neonplan3d/discussions/categories/ideas).
 
+## 1.25.2
+
+### Changed
+
+- **U-stair with landing:** the landing is a slab across the whole width – the room under it stays free (it stood on a solid block under the first flight's half).
+
 ## 1.25.1
 
 ### Changed

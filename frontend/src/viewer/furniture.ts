@@ -1002,11 +1002,10 @@ function stairsU(b: Builder, w: number, d: number, h: number): void {
     b.seg(xa0, y1, z1, xa1, y1, z1, EDGE_FURN);
   }
   b.seg(xa0, 0, d / 2, xa0, rise, d / 2, EDGE_FURN);
-  // the landing across both flights: solid under the first flight's half, a slab over the second's
+  // the landing across both flights: a slab, the room under it stays free
   const yl = rise * k;
   const slab = 0.2;
-  b.box(xa0, xa1, 0, yl, -d / 2, zl, C.wood, C.woodTop);
-  b.box(xa1, xb1, Math.max(0, yl - slab), yl, -d / 2, zl, C.wood, C.woodTop);
+  b.box(xa0, xb1, Math.max(0, yl - slab), yl, -d / 2, zl, C.wood, C.woodTop);
   b.seg(xa0, yl, zl, xa1, yl, zl, EDGE_FURN);
   // the second flight rises from the landing towards the front as stepped slabs (open below, so it
   // does not stand like a wall); its top step is the upper floor
