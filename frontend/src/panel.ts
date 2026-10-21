@@ -24,7 +24,7 @@ import { hasFeature, registerUrl, UNRELEASED } from "./features.ts";
 import { directorOnHere } from "./director.ts";
 import { loadVoice, micProbeDone, screenName, voiceOnHere } from "./load-voice.ts";
 import type { ClockPos } from "./card-config.ts";
-import { getLicense, unseenOffers, unseenUpdates } from "./api.ts";
+import { getLicense } from "./api.ts";
 import { TimeTravel } from "./load-timetravel.ts";
 import type { HistorySpec } from "./timetravel/types.ts";
 import type { Feature } from "./features.ts";
@@ -57,8 +57,6 @@ export class Floorplan3dPanel extends LitElement {
     route: { attribute: false },
     panel: { attribute: false },
     _mode: { state: true },
-    _newOffers: { state: true },
-    _readyPacks: { state: true },
     _shopConnected: { state: true },
     _giftLater: { state: true },
     _showOpen: { state: true },
@@ -102,10 +100,6 @@ export class Floorplan3dPanel extends LitElement {
   declare route: unknown;
   declare panel: unknown;
   private declare _mode: Mode;
-  /** Shop offers not seen yet (a dot on the extensions tab). */
-  private declare _newOffers: number;
-  /** Bought packs waiting here: updates and packs not installed yet (a gift such as a fun pack too). */
-  private declare _readyPacks: number;
   /** Whether this installation is connected to the shop (null until known). */
   private declare _shopConnected: boolean | null;
   /** "Later" on the gift notice: gone for this visit. */
@@ -173,8 +167,6 @@ export class Floorplan3dPanel extends LitElement {
     super();
     this.narrow = false;
     this._mode = "view";
-    this._newOffers = 0;
-    this._readyPacks = 0;
     this._shopConnected = null;
     this._giftLater = false;
     this._showOpen = false;
@@ -526,18 +518,13 @@ export class Floorplan3dPanel extends LitElement {
     window.addEventListener("keydown", this.onKey);
   }
 
-  /** Once per page: are there shop offers the admin has not seen yet? (Only with a shop key.) */
+  /** Once per page: is this installation connected to the shop? (The gift notice depends on it.) */
   private checkOffers(): void {
     if (this.offersChecked || !this.hass?.user?.is_admin) return;
     this.offersChecked = true;
     getLicense(this.hass)
       .then((lic) => {
         this._shopConnected = !!lic.active;
-        // "3 new" (shop offers) only for customers who bought something: a free user is not nudged on the tab, the
-        // offers still wait under Extensions (fun packs and taster packs are gifts, not purchases)
-        const bought = (lic.packs ?? []).some((p) => !/^(mastershort\.)?fun_|_sample$/.test(p.id));
-        this._newOffers = lic.active && bought ? unseenOffers(lic.offers ?? []).length : 0;
-        this._readyPacks = lic.active ? unseenUpdates(lic.updates ?? []).length + (lic.packs ?? []).filter((p) => p.installed === null).length : 0;
       })
       .catch(() => undefined);
   }
@@ -563,13 +550,6 @@ export class Floorplan3dPanel extends LitElement {
             ? html`<div class="fp3d-seg" role="tablist">
                 <button role="tab" aria-pressed=${this._mode === "view"} @click=${() => this.setMode("view")}>${this.t("view")}</button>
                 <button role="tab" aria-pressed=${this._mode === "editor"} @click=${() => this.setMode("editor")}>${this.t("editor")}</button>
-                <button role="tab" class="fp3d-tab-ext" aria-pressed=${this._mode === "extensions"} @click=${() => this.setMode("extensions")}>
-                  ✦ ${this.t("ext_tab")}${this._readyPacks
-                    ? html`<span class="fp3d-badge" title=${this.t("ext_badge_ready_hint")}>⬇ ${this.t("ext_badge_ready", { n: this._readyPacks })}</span>`
-                    : this._newOffers
-                      ? html`<span class="fp3d-badge" title=${this.t("offers_dot")}>${this.t("ext_badge_new", { n: this._newOffers })}</span>`
-                      : nothing}
-                </button>
                 <button role="tab" aria-pressed=${this._mode === "furniture"} title=${this.t("own_furniture_tab")} aria-label=${this.t("own_furniture_tab")} @click=${() => this.setMode("furniture")}>
                   🛋<span class="fp3d-tab-text"> ${this.t("own_furniture_tab")}</span>
                 </button>
@@ -838,8 +818,6 @@ export class Floorplan3dPanel extends LitElement {
       .building=${this.data.building}
       @building-edit=${(e: CustomEvent<Building>) => this.data.edit(e.detail)}
       @packs-changed=${() => void this.data.reloadPacks()}
-      @offers-seen=${() => (this._newOffers = 0)}
-      @packs-ready=${(e: CustomEvent<number>) => (this._readyPacks = e.detail)}
     ></fp3d-extensions>`;
   }
 
@@ -1189,29 +1167,6 @@ export class Floorplan3dPanel extends LitElement {
         flex-wrap: wrap;
         gap: 8px;
         justify-content: center;
-      }
-      .fp3d-badge {
-        display: inline-block;
-        margin-left: 6px;
-        padding: 1px 8px;
-        border-radius: 999px;
-        background: #ffb547;
-        color: #1a1204;
-        font-size: 0.78em;
-        font-weight: 700;
-        line-height: 1.5;
-        box-shadow: 0 0 10px rgba(255, 181, 71, 0.7);
-        vertical-align: middle;
-        white-space: nowrap;
-        animation: fp3d-badge-in 1.6s ease-out 2;
-      }
-      @keyframes fp3d-badge-in {
-        0% {
-          box-shadow: 0 0 0 0 rgba(255, 181, 71, 0.9);
-        }
-        100% {
-          box-shadow: 0 0 0 10px rgba(255, 181, 71, 0);
-        }
       }
       :host {
         display: block;

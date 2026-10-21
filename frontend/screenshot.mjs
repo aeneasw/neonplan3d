@@ -281,9 +281,8 @@ const shots = [
   { name: "editor-packs", query: "", width: 1280, height: 1000, editor: true, editorState: { _tool: "furniture", _roomId: "wohnen" }, scrollSide: true },
   { name: "view-packs", query: "", width: 1280, height: 800, editor: true, editorScript: PACK_SCRIPT, then3d: "Wohnzimmer" },
   { name: "editor-packs-plan", query: "", width: 1280, height: 800, editor: true, editorScript: PACK_SCRIPT },
-  { name: "extensions", query: "?shop", width: 1280, height: 1000, click: "✦ Erweiterungen", wait: 800 },
-  { name: "tab-new-offers", query: "?shop", width: 1280, height: 300, wait: 1500 },
-  { name: "extensions-locked", query: "?nopro", width: 1280, height: 1000, click: "✦ Erweiterungen", wait: 800 },
+  { name: "extensions", query: "?shop", width: 1280, height: 1000, mode: "extensions", wait: 800 },
+  { name: "extensions-locked", query: "?nopro", width: 1280, height: 1000, mode: "extensions", wait: 800 },
   { name: "own-furniture", query: "", width: 1280, height: 900, click: "🛋 Eigene Möbel", wait: 800 },
   {
     name: "own-furniture-draft",
@@ -480,6 +479,11 @@ for (const shot of shots.filter((s) => !only || only.includes(s.name))) {
     await new Promise((r) => setTimeout(r, 1500));
   };
   if (shot.wait) await new Promise((r) => setTimeout(r, shot.wait));
+  if (shot.mode) {
+    // a page without a tab of its own (the extensions open from the editor's furniture tool)
+    await page.evaluate((mode) => document.querySelector("neonplan3d-panel").setMode(mode), shot.mode);
+    await new Promise((r) => setTimeout(r, 1200));
+  }
   if (shot.editor) await clickText("Editor");
   if (shot.select) await clickText(shot.select);
   if (shot.click) await clickText(shot.click);

@@ -67,7 +67,7 @@ Also included: parking spots with vehicles that appear while a car is home, wast
 
 ## Free, packs and Pro add-ons
 
-The integration and everything above are **free and open source (MIT)**. Safety (smoke, water, alarm, rain warning, power outage) is always free. Optional extras are sold once – no subscription – at [mastershort.de](https://mastershort.de/en/neonplan3d/?lang=en) and install from the **Extensions** tab:
+The integration and everything above are **free and open source (MIT)**. Safety (smoke, water, alarm, rain warning, power outage) is always free. Optional extras are sold once – no subscription – at [mastershort.de](https://mastershort.de/en/neonplan3d/?lang=en) and install on the **Extensions** page (Editor → Furniture → *Open extensions*):
 
 - **Furniture packs** – living room, kitchen, bedroom, bath, kids, office & gaming, garden & terrace, garage & workshop, fitness, smart home & tech, cinema & hi-fi, utility, architecture, stairs & railings, vehicles; free fun packs (pets, Halloween) with a customer account.
 - **Pro add-ons**

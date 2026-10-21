@@ -1006,7 +1006,7 @@ Household Pro shows what is due in the household, right where it happens. The wa
 
 ![Extensions](images/extensions.jpg)
 
-The **✦ Extensions** tab gathers everything you can add to NeonPlan 3D.
+The **Extensions** page gathers everything you can add to NeonPlan 3D. It has no tab of its own: open it in the editor under **Furniture → Open extensions** (or from a Pro hint in the 3D view).
 
 ### 7.1 Shop connection
 
@@ -1022,7 +1022,7 @@ After that:
 - **Everything keeps working offline.** Installed packs are checked locally, the shop is never needed for that.
 - **Disconnect** removes the key. Installed packs stay.
 - **Pack updates:** When a bought pack grows, the page shows once what was added.
-- **New in the shop:** With a shop connection the page shows the packs and Pro add-ons you do not have yet at the top, with **NEW** for fresh ones. A badge on the **✦ Extensions** tab shows what is waiting: **"2 ready"** for bought or given packs that can be installed or updated, **"3 new"** for new offers in the shop (only once you have bought something; the offers are always here anyway). When a pack newly belongs to you (bought or a gift), Home Assistant also announces it once under **Notifications** (several packs at once in one notice); it is dismissed when the pack is installed. Without a key NeonPlan 3D never contacts the shop.
+- **New in the shop:** With a shop connection the page shows the packs and Pro add-ons you do not have yet at the top, with **NEW** for fresh ones. When a pack newly belongs to you (bought or a gift), Home Assistant also announces it once under **Notifications** (several packs at once in one notice); it is dismissed when the pack is installed. Without a key NeonPlan 3D never contacts the shop.
 - **Loyalty discount:** With your first purchase you get a personal discount code for every further pack and Pro add-on (not for bundles). It is in the order e-mail, in your account and at the top under **New in the shop**; tapping an offer puts it straight into the cart.
 - **4 furniture packs as a gift:** With a shop connection, if you have not subscribed to the NeonPlan newsletter yet, a small box shows here. After signing up and confirming by mail, the taster packs living room, kitchen, bedroom and bathroom (4 items each) appear under Extensions by themselves – at the next daily check at the latest, at once with **Check now**. **Don't show again** hides the box on this device.
 

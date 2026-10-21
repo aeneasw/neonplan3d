@@ -4,6 +4,12 @@ All notable changes to NeonPlan 3D. The full notes in German and English are on 
 [releases page](https://github.com/Mastershort/neonplan3d/releases). Ideas and votes:
 [Discussions → Ideas](https://github.com/Mastershort/neonplan3d/discussions/categories/ideas).
 
+## 1.25.1
+
+### Changed
+
+- **No Extensions tab any more:** the header shows 3D, Editor and 🛋 Own furniture. The Extensions page (packs, shop connection, Pro add-ons, modules) opens in the editor under Furniture → *Open extensions*, from a Pro hint in the 3D view and from the gift notice; the "ready" and "new" badges went with the tab.
+
 ## 1.25.0
 
 ### New
