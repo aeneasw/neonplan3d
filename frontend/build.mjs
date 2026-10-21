@@ -42,13 +42,15 @@ const timeTravelConfig = { ...common, entryPoints: ["src/timetravel/entry.ts"], 
 const funConfig = { ...common, entryPoints: ["src/fun/entry.ts"], outfile: `${out}/neonplan3d-fun.js` };
 // voice (the microphone probe for now) only loads when it is asked for
 const voiceConfig = { ...common, entryPoints: ["src/voice/entry.ts"], outfile: `${out}/neonplan3d-voice.js` };
+// the "Eigene Möbel" page (own furniture from Blender, Rhino and co.) only loads when it is opened; it brings its texts
+const furnitureConfig = { ...common, entryPoints: ["src/furniture/entry.ts"], outfile: `${out}/neonplan3d-furniture.js` };
 // the import page of the website (other programs' plans to NeonPlan, in the browser): not part of the integration
 const importConfig = { ...common, entryPoints: ["src/import/app.ts"], outfile: "../site/import/neonplan-import.js" };
 // The main bundle loads the 3D bundle with a hash of its content in the URL, so a new 3D bundle is
 // never taken from the browser cache (the integration version only changes after a restart).
 // the frontend knows its own version, to notice a backend that still runs an older one
 const version = JSON.parse(readFileSync("../custom_components/neonplan3d/manifest.json", "utf8")).version;
-const mainConfig = (viewerHash, editorHash, cardEditorHash, timeTravelHash, funHash, voiceHash) => ({
+const mainConfig = (viewerHash, editorHash, cardEditorHash, timeTravelHash, funHash, voiceHash, furnitureHash) => ({
   ...common,
   entryPoints: ["src/main.ts"],
   outfile: `${out}/neonplan3d.js`,
@@ -59,6 +61,7 @@ const mainConfig = (viewerHash, editorHash, cardEditorHash, timeTravelHash, funH
     __FP3D_TIMETRAVEL_HASH__: JSON.stringify(timeTravelHash),
     __FP3D_FUN_HASH__: JSON.stringify(funHash),
     __FP3D_VOICE_HASH__: JSON.stringify(voiceHash),
+    __FP3D_FURNITURE_HASH__: JSON.stringify(furnitureHash),
     __FP3D_VERSION__: JSON.stringify(version),
     __FP3D_LANG_HASH__: JSON.stringify(langHash),
   },
@@ -115,12 +118,13 @@ function copyFonts() {
 // editor 800 KB on 2026-10-14 for the awning (form, sensors) and the 1.18.2 fixes
 // main 570 KB, 3D 770 KB and card editor 230 KB on 2026-10-14 for the awnings (five kinds) and their texts
 // main 590 KB, editor 820 KB, card editor 235 KB on 2026-10-15 for the household (bins, mailboxes, Haushalt Pro) and its texts
-const BUDGET = { "neonplan3d.js": 664 * 1024, "neonplan3d-fun.js": 40 * 1024, "neonplan3d-voice.js": 60 * 1024, "neonplan3d-timetravel.js": 120 * 1024, "neonplan3d-3d.js": 792 * 1024, "neonplan3d-editor.js": 912 * 1024, "neonplan3d-card-editor.js": 264 * 1024 };
+// own furniture 64 KB on 2026-10-21: the "Eigene Möbel" page with its preview renderer, its texts and its own Lit
+const BUDGET = { "neonplan3d.js": 664 * 1024, "neonplan3d-fun.js": 40 * 1024, "neonplan3d-voice.js": 60 * 1024, "neonplan3d-furniture.js": 64 * 1024, "neonplan3d-timetravel.js": 120 * 1024, "neonplan3d-3d.js": 792 * 1024, "neonplan3d-editor.js": 912 * 1024, "neonplan3d-card-editor.js": 264 * 1024 };
 
 copyFonts();
 if (watch) {
   // in watch mode the hash is not tracked; a dev reload fetches the bundle anyway
-  for (const c of [viewerConfig, editorConfig("dev"), cardEditorConfig, timeTravelConfig, funConfig, voiceConfig, mainConfig("dev", "dev", "dev", "dev", "dev", "dev")]) await (await context(c)).watch();
+  for (const c of [viewerConfig, editorConfig("dev"), cardEditorConfig, timeTravelConfig, funConfig, voiceConfig, furnitureConfig, mainConfig("dev", "dev", "dev", "dev", "dev", "dev", "dev")]) await (await context(c)).watch();
 } else {
   await build(viewerConfig);
   const editor = editorConfig(hashOf(viewerConfig.outfile));
@@ -129,8 +133,9 @@ if (watch) {
   await build(timeTravelConfig);
   await build(funConfig);
   await build(voiceConfig);
+  await build(furnitureConfig);
   await build(importConfig);
-  await build(mainConfig(hashOf(viewerConfig.outfile), hashOf(editor.outfile), hashOf(cardEditorConfig.outfile), hashOf(timeTravelConfig.outfile), hashOf(funConfig.outfile), hashOf(voiceConfig.outfile)));
+  await build(mainConfig(hashOf(viewerConfig.outfile), hashOf(editor.outfile), hashOf(cardEditorConfig.outfile), hashOf(timeTravelConfig.outfile), hashOf(funConfig.outfile), hashOf(voiceConfig.outfile), hashOf(furnitureConfig.outfile)));
   let over = false;
   // old Fire-tablet WebViews (Chrome before 91, e.g. Fully Kiosk on a Fire 7) throw on an optional call with spread
   // arguments, `a?.b(...x)` – the roof failed there; lowering the target for it would cost ~11 KB, so it is banned

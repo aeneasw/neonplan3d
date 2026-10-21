@@ -284,6 +284,17 @@ const shots = [
   { name: "extensions", query: "?shop", width: 1280, height: 1000, click: "✦ Erweiterungen", wait: 800 },
   { name: "tab-new-offers", query: "?shop", width: 1280, height: 300, wait: 1500 },
   { name: "extensions-locked", query: "?nopro", width: 1280, height: 1000, click: "✦ Erweiterungen", wait: 800 },
+  { name: "own-furniture", query: "", width: 1280, height: 900, click: "🛋 Eigene Möbel", wait: 800 },
+  {
+    name: "own-furniture-draft",
+    query: "",
+    width: 1280,
+    height: 1000,
+    click: "🛋 Eigene Möbel",
+    wait: 800,
+    furnitureScript: "const it = f._state.items[1]; f.editItem(it); f._draft = { ...f._draft, editing: undefined, session: 'demo', objects: 4, options: { max_parts: 40, units: 'auto', up: 'auto', turn: 0, edges: 'faint' }, result: { ...f._draft.result, unit: 'm', up: 'y', notes: [{ code: 'unit_guessed', unit: 'm' }] } };",
+  },
+  { name: "own-furniture-phone", query: "", width: 390, height: 844, click: "🛋", wait: 800 },
   { name: "card-editor", query: "?card", width: 1400, height: 900 },
   { name: "card-og-dim", query: "?card&floor=og", width: 1400, height: 900 },
   { name: "card-og-stacked", query: "?card&floor=og&stack=stacked", width: 1400, height: 900 },
@@ -516,6 +527,14 @@ for (const shot of shots.filter((s) => !only || only.includes(s.name))) {
     if (at) await page.mouse.click(at[0], at[1]);
     await new Promise((r) => setTimeout(r, 400));
     console.log("CLICK", shot.mouseClickIn, at ? "at " + at.map(Math.round).join(",") : "NOT FOUND", await page.evaluate(() => JSON.stringify(window.__calls)));
+  }
+  if (shot.furnitureScript) {
+    // runs with f = the "Eigene Möbel" page
+    await page.evaluate((code) => {
+      const f = document.querySelector("neonplan3d-panel").shadowRoot.querySelector("fp3d-own-furniture");
+      new Function("f", code)(f);
+    }, shot.furnitureScript);
+    await new Promise((r) => setTimeout(r, 1200));
   }
   if (shot.editorScript) {
     await page.evaluate((code) => {

@@ -4,6 +4,13 @@ All notable changes to NeonPlan 3D. The full notes in German and English are on 
 [releases page](https://github.com/Mastershort/neonplan3d/releases). Ideas and votes:
 [Discussions → Ideas](https://github.com/Mastershort/neonplan3d/discussions/categories/ideas).
 
+## 1.25.0
+
+### New
+
+- **Own furniture from Blender, Rhino & co.** – the new tab **🛋 Own furniture** (admins) next to Extensions: drop a model (GLB, glTF with .bin, OBJ with .mtl, STL or a pack JSON), turn the preview, set detail, unit, up axis, front and edges, pick name, kind, rooms, mount, lamp type, electric and surface, and import it. The model is rebuilt from boxes, cylinders and lofts (60 parts at most) and shows in the library at once, without a reload. All own furniture lives in one pack (`studio.eigene-moebel`), signed with a key of your installation that NeonPlan limits like a studio key: own furniture only, no Pro features, no modules – a self-test proves that before anything is signed. Edit, remove, import again and save as `.fp3dpack` from the list. Guide: [docs/own-furniture.md](docs/own-furniture.md).
+- The separate integration "NeonPlan 3D – Eigene Möbel" is not needed any more: its key and furniture are taken over on the first start, the pack it imported stays valid. Remove the old integration afterwards.
+
 ## 1.24.0
 
 ### Changed

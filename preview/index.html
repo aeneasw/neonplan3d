@@ -57,6 +57,8 @@
       const diag = { enabled: false };
       const images = { ...DEMO_PICTURES };
       const listeners = new Set();
+      // the "Eigene Möbel" page: two invented pieces of furniture (the key counts as active)
+      const OWN_FURNITURE = [{"id": "regal_offen", "name": {"de": "Offenes Regal", "en": "Open shelf"}, "size": [0.8, 0.35, 1.8], "group": "storage", "room": ["living", "office"], "parts": [{"shape": "box", "x": -0.48, "z": 0, "w": 0.04, "d": 1, "y": 0, "h": 1, "color": "wood", "fix": "w"}, {"shape": "box", "x": 0.48, "z": 0, "w": 0.04, "d": 1, "y": 0, "h": 1, "color": "wood", "fix": "w"}, {"shape": "box", "x": 0, "z": -0.47, "w": 0.92, "d": 0.06, "y": 0, "h": 1, "color": "white"}, {"shape": "box", "x": 0, "z": 0, "w": 0.92, "d": 1, "y": 0.0, "h": 0.03, "color": "wood"}, {"shape": "box", "x": 0, "z": 0, "w": 0.92, "d": 1, "y": 0.32, "h": 0.015, "color": "wood"}, {"shape": "box", "x": 0, "z": 0, "w": 0.92, "d": 1, "y": 0.64, "h": 0.015, "color": "wood"}, {"shape": "box", "x": 0, "z": 0, "w": 1, "d": 1, "y": 0.985, "h": 0.015, "color": "wood", "edges": true}], "symbol": [{"shape": "rect", "x": 0, "z": 0, "w": 1, "d": 1}, {"shape": "line", "x1": -0.5, "z1": 0.5, "x2": 0.5, "z2": 0.5}]}, {"id": "stehlampe_schirm", "name": {"de": "Stehlampe mit Schirm", "en": "Floor lamp with shade"}, "size": [0.45, 0.45, 1.6], "light": "floor", "group": "lamp", "room": ["living", "bedroom"], "parts": [{"shape": "cyl", "x": 0, "z": 0, "w": 0.6, "d": 0.6, "y": 0, "h": 0.02, "color": "metal"}, {"shape": "cyl", "x": 0, "z": 0, "w": 0.06, "d": 0.06, "y": 0.02, "h": 0.8, "color": "metal"}, {"shape": "cyl", "x": 0, "z": 0, "w": 0.3, "d": 0.3, "y": 0.78, "h": 0.05, "color": "white", "glow": true}, {"shape": "loft", "x": 0, "z": 0, "w": 1, "d": 1, "y": 0.8, "h": 0.2, "tw": 0.6, "td": 0.6, "color": "fabric", "edges": "faint"}], "symbol": [{"shape": "circle", "x": 0, "z": 0, "r": 0.5}]}];
       // invented restore points
       const history = [{ id: "s0", revision: 0, saved_at: Date.now() / 1000 - 3600, building: structuredClone(building) }];
 
@@ -207,6 +209,10 @@
             case "neonplan3d/image/set":
               images[msg.image_id] = msg.data;
               return null;
+            case "neonplan3d/own_furniture/state":
+              return { active: true, error: null, detail: "", key_id: "demo", pack_id: "studio.eigene-moebel", release: 1, items: OWN_FURNITURE };
+            case "neonplan3d/own_furniture/pack":
+              return { pack: null, pack_id: "studio.eigene-moebel" };
             case "neonplan3d/packs/list":
               return { packs: await previewPacks() };
             case "neonplan3d/packs/import": {

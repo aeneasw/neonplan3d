@@ -61,6 +61,8 @@ Three looks, an accent colour of your choice, and **Auto** – day while the sun
 
 **Coming from another program?** The [import page](https://neonplan3d.mastershort.de/import/) turns Sweet Home 3D, iPhone LiDAR scans (RoomPlan), CAD (DXF), Blender/SketchUp models (glTF, OBJ, STL), Floorplanner and Valetudo robot maps into a NeonPlan plan – in your browser. Or let an AI write it with [this template](docs/ai-import.md) ([format](docs/plan-format.md)).
 
+**Own furniture from Blender, Rhino & co.:** the **🛋 Own furniture** tab (admins) takes a model (GLB, glTF, OBJ, STL), shows it the way NeonPlan will draw it and puts it into the library – rebuilt from boxes, cylinders and sloped boxes. Your installation signs it with its own key, which can sign your own furniture only and unlocks nothing else ([guide](docs/own-furniture.md), German).
+
 Also included: parking spots with vehicles that appear while a car is home, waste bins and mailboxes, smart locks on doors, a clock in the view, search, restore points, a full backup of plan, pictures and packs, and 18 languages.
 
 ## Free, packs and Pro add-ons

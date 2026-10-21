@@ -19,6 +19,7 @@ from homeassistant.helpers.http import KEY_HASS
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.loader import async_get_integration
 
+from . import own_furniture
 from .card_resource import (
     LOADER_FILE,
     LOADER_URL,
@@ -53,6 +54,7 @@ _STATIC_REGISTERED = f"{DOMAIN}_static_registered"
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Register the websocket commands and the static path once, as early as possible (#461)."""
     async_register_commands(hass)
+    own_furniture.async_register(hass)
     await _async_register_static(hass)
     return True
 
@@ -141,6 +143,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Assist asks the house: service, intent and the sentences Assist understands
     await async_setup_voice(hass)
 
+    # own furniture from Blender, Rhino and co.: the own key joins the pack check (in memory only)
+    await own_furniture.async_setup(hass)
+
     await _async_register_static(hass)
 
     url = await _async_main_url(hass)
@@ -171,6 +176,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     with contextlib.suppress(KeyError, ValueError):
         frontend.remove_extra_js_url(hass, await _async_main_url(hass))
     async_unload_voice(hass)
+    own_furniture.async_unload(hass)
     hass.data.pop(DOMAIN, None)
     hass.data.pop(DATA_DIAGNOSTICS, None)
     return True

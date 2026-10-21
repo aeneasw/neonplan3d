@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { BuildingController } from "./building-controller.ts";
 import { countView } from "./diagnostics.ts";
 import { loadEditor } from "./load-editor.ts";
+import { loadFurniture } from "./load-furniture.ts";
 import "./components/room-panel.ts";
 import "./components/view3d.ts";
 import { languageReady, loadLanguage, translate, type I18nKey } from "./i18n.ts";
@@ -29,7 +30,7 @@ import type { HistorySpec } from "./timetravel/types.ts";
 import type { Feature } from "./features.ts";
 import type { FloorStack, Quality, WallMode } from "./viewer/viewer3d.ts";
 
-type Mode = "view" | "editor" | "extensions";
+type Mode = "view" | "editor" | "extensions" | "furniture";
 
 /** View preferences belong to the device (a wall tablet wants other settings than a desktop). */
 const prefs = {
@@ -62,6 +63,7 @@ export class Floorplan3dPanel extends LitElement {
     _giftLater: { state: true },
     _showOpen: { state: true },
     _editorReady: { state: true },
+    _furnitureReady: { state: true },
     _floorId: { state: true },
     _roomId: { state: true },
     _wallMode: { state: true },
@@ -113,6 +115,8 @@ export class Floorplan3dPanel extends LitElement {
   private offersChecked = false;
   /** The editor bundle is loaded (it is fetched the first time the editor opens). */
   private declare _editorReady: boolean;
+  /** The own furniture bundle is loaded (it is fetched the first time its page opens). */
+  private declare _furnitureReady: boolean;
   private declare _floorId: string | null;
   private declare _roomId: string | null;
   private declare _wallMode: WallMode;
@@ -175,6 +179,7 @@ export class Floorplan3dPanel extends LitElement {
     this._giftLater = false;
     this._showOpen = false;
     this._editorReady = !!customElements.get("fp3d-editor");
+    this._furnitureReady = !!customElements.get("fp3d-own-furniture");
     this._floorId = null;
     this._roomId = null;
     // the wall view stays as it was last set on this device (#309)
@@ -565,6 +570,9 @@ export class Floorplan3dPanel extends LitElement {
                       ? html`<span class="fp3d-badge" title=${this.t("offers_dot")}>${this.t("ext_badge_new", { n: this._newOffers })}</span>`
                       : nothing}
                 </button>
+                <button role="tab" aria-pressed=${this._mode === "furniture"} title=${this.t("own_furniture_tab")} aria-label=${this.t("own_furniture_tab")} @click=${() => this.setMode("furniture")}>
+                  🛋<span class="fp3d-tab-text"> ${this.t("own_furniture_tab")}</span>
+                </button>
               </div>`
             : nothing}
           <span class="fp3d-grow"></span>
@@ -736,7 +744,9 @@ export class Floorplan3dPanel extends LitElement {
             ? this.renderEditor(b)
             : this._mode === "extensions" && this.isAdmin
               ? this.renderExtensions()
-              : this.renderView(b)
+              : this._mode === "furniture" && this.isAdmin
+                ? this.renderOwnFurniture()
+                : this.renderView(b)
           : nothing}
         ${this.renderGift()}
       </div>
@@ -831,6 +841,17 @@ export class Floorplan3dPanel extends LitElement {
       @offers-seen=${() => (this._newOffers = 0)}
       @packs-ready=${(e: CustomEvent<number>) => (this._readyPacks = e.detail)}
     ></fp3d-extensions>`;
+  }
+
+  private renderOwnFurniture() {
+    if (!this._furnitureReady) {
+      loadFurniture().then(
+        () => (this._furnitureReady = true),
+        (err: unknown) => (this.data.error = String(err)),
+      );
+      return html`<div class="fp3d-empty"><p>${this.t("loading")}</p></div>`;
+    }
+    return html`<fp3d-own-furniture class="fp3d-body" .hass=${this.hass} @packs-changed=${() => void this.data.reloadPacks()}></fp3d-own-furniture>`;
   }
 
   private renderEditor(b: Building) {
@@ -1607,6 +1628,10 @@ export class Floorplan3dPanel extends LitElement {
       @media (max-width: 600px) {
         .fp3d-phone-only {
           display: block;
+        }
+        /* four tabs do not fit a phone: the own furniture tab keeps its symbol */
+        .fp3d-tab-text {
+          display: none;
         }
       }
       .fp3d-empty {
